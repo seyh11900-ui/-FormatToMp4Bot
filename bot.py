@@ -17,10 +17,13 @@ logging.basicConfig(
     level=logging.INFO,
 )
 
-BOT_TOKEN = "YOUR_TELEGRAM_BOT_TOKEN"
-MAX_FILE_SIZE_BYTES = 20 * 1024 * 1024  # 20 MB Telegram download limit
+# Read BOT_TOKEN from environment variables (Required for Railway/Render/Docker)
+BOT_TOKEN = os.getenv("BOT_TOKEN")
 
-# Default video encoding presets per user session
+# Telegram Bot API standard download limit (20 MB)
+MAX_FILE_SIZE_BYTES = 20 * 1024 * 1024  
+
+# Store user settings in-memory
 USER_SETTINGS = {}
 
 DEFAULT_PRESET = {
@@ -75,12 +78,12 @@ async def settings_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -
     keyboard = [
         [
             InlineKeyboardButton(
-                f"Resolution: {res_label}", callback_query_data="toggle_res"
+                f"Resolution: {res_label}", callback_data="toggle_res"
             )
         ],
         [
             InlineKeyboardButton(
-                f"Quality (CRF): {settings['crf']} (Medium)", callback_query_data="toggle_crf"
+                f"Quality (CRF): {settings['crf']} (Medium)", callback_data="toggle_crf"
             )
         ],
     ]
@@ -251,6 +254,12 @@ async def unknown_command(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
 
 def main():
     """Initializes and runs the Telegram bot."""
+    if not BOT_TOKEN:
+        raise ValueError(
+            "CRITICAL: BOT_TOKEN environment variable is not set! "
+            "Please set BOT_TOKEN in your environment variables or Railway settings."
+        )
+
     app = ApplicationBuilder().token(BOT_TOKEN).build()
 
     # Register Command Handlers
