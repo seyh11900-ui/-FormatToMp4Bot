@@ -8,9 +8,9 @@ from deep_translator import GoogleTranslator
 
 logging.basicConfig(level=logging.INFO)
 
-BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN") or os.getenv("BOT_TOKEN")
+BOT_TOKEN = os.getenv("BOT_TOKEN")
 if not BOT_TOKEN:
-    raise ValueError("TELEGRAM_BOT_TOKEN environment variable is missing!")
+    raise ValueError("Error: BOT_TOKEN environment variable is missing.")
 
 bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
